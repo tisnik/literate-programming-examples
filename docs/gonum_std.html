@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>gonum.go</title>
+<meta charset="utf-8"/>
+<style type="text/css">body {
+    background: rgb(225, 225, 225);
+    margin: 0px;
+    padding: 0px;
+}
+
+#docgo p {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 15px;
+    margin-left: 0px;
+}
+
+#docgo div {
+    display: inline;
+}
+
+#docgo #background {
+    position: fixed;
+    top: 0; left: 525px; right: 0; bottom: 0;
+    background: rgb(47, 47, 47);
+    border-left: 1px solid #e5e5ee;
+    z-index: -1;
+}
+
+#docgo .keyword {
+    color: rgb(250, 200, 100);
+}
+
+#docgo .literal {
+    color: rgb(140, 190, 100);
+}
+
+#docgo .ident {
+    color: white;
+}
+
+#docgo .operator {
+    color: white;
+}
+
+#docgo .comment {
+}
+
+#docgo h1, h2, h3, h4, h5 {
+    text-align: left;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 15px;
+    margin-left: 0px;
+}
+
+#docgo h1 {
+    margin-top: 40px;
+}
+
+#docgo .doc {
+    vertical-align: top;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    font-size: 15px;
+    line-height: 22px;
+    color: black;
+    min-width: 450px;
+    max-width: 450px;
+    padding-top: 10px;
+    padding-right: 25px;
+    padding-bottom: 1px;
+    padding-left: 50px;
+    overflow-x: hidden;
+}
+
+#docgo .code {
+    min-width: 650px;
+    max-width: 650px;
+    padding-left: 25px;
+    padding-right: 15px;
+    border-left: 1px;
+    overflow-x: hidden;
+    vertical-align: top;
+}
+
+#docgo .code pre code  {
+    font-size: 12px;
+    line-height: 18px;
+    font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+    color: rgb(120, 120, 120);
+}
+</style>
+</head>
+<body>
+<div id="docgo">
+  <div id="background"></div>
+  <table>
+    <thead><tr><th class="doc"><h1>gonum.go</h1></th><th class="code"></th></tr></thead>
+    <tbody>
+      
+      <tr class="section">
+	<td class="doc"><h1>Knihovna Gonum</h1>
+</td>
+	<td class="code"><pre><code></code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Úvodní informace o knihovně Gonum</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Samotný programovací jazyk Go obsahuje podporu pro práci s maticemi a řezy
+(ostatně se jedná o základní datové typy tohoto jazyka). Práce s těmito
+datovými strukturami je podporována i ve standardní knihovně jazyka. Ovšem
+například v porovnání se známou a velmi často používanou knihovnou <strong>NumPy</strong>
+ze světa Pythonu (nebo s možnostmi Matlabu či R) jsou možnosti standardní
+instalace Go v této oblasti mnohem menší. Ovšem některé operace, které známe
+z <strong>NumPy</strong>, byly implementovány v sadě knihoven, které jsou součástí
+projektu nazvaného jednoduše <strong>Gonum Numerical Packages</strong>. Tento projekt
+obsahuje zejména knihovnu pro práci s maticemi (naprosté základy si ukážeme
+níže), algoritmy lineární algebry, podporu pro tvorbu grafů, podporu práce s
+takzvanými &quot;datovými rámci&quot; (ve světě Pythonu se pro tento účeů používá
+<strong>pandas</strong>) atd.</p>
+</td>
+	<td class="code"><pre><code>
+<div class="comment">/*
+Copyright © 2020 Pavel Tisnovsky
+
+Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/</div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><blockquote>
+<p>Poznámka: na tomto místě je však vhodné poznamenat, že integrace <strong>NumPy</strong>
+do <strong>Pythonu</strong> je mnohem lepší, než je tomu v případě projektu <strong>Gonum</strong> a
+programovacího jazyka <strong>Go</strong>. Je tomu tak z toho důvodu, že jazyk Go v
+současné verzi nepodporuje přetěžování operátorů, takže například není možné
+implementovat maticové operace &quot;přirozenou&quot; cestou (zrovna příklad <strong>NumPy</strong>
+ukazuje, že přetěžování operátorů, pokud je použito rozumně, může být velmi
+užitečné).</p>
+</blockquote>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Nyní, pokud máme nainstalován projekt <strong>Gonum</strong>, si můžeme ukázat, jak se
+manipuluje s maticemi, které v oblasti numerických výpočtů mnohdy
+představují základní datový typ.</p>
+</td>
+	<td class="code"><pre><code>
+<div class="keyword">package</div> <div class="ident">main</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Používat budeme dva balíčky - standardní balíček <strong>fmt</strong> a balíček <strong>mat</strong> z
+knihovny <strong>Gonum</strong>:</p>
+</td>
+	<td class="code"><pre><code>
+<div class="keyword">import</div> <div class="operator">(</div>
+	<div class="literal">&#34;fmt&#34;</div><div class="operator"></div>
+	<div class="literal">&#34;gonum.org/v1/gonum/mat&#34;</div><div class="operator"></div>
+<div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>V tomto studijním materiálu využijeme jednu velmi užitečnou vlastnost
+programovacího jazyka Go - automatické odvození typu proměnné na základě
+její hodnoty. Zajímavé informace o této vlastnosti programovacího jazyka Go
+lze najít na <a href="https://medium.com/@ankur_anand/a-closer-look-at-go-golang-type-system-3058a51d1615">této adrese</a>
+popř. přímo na stránkách
+<a href="https://www.root.cz/clanky/datove-typy-v-programovacim-jazyku-go/#k08">Rootu</a>.</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Jediným problémem je, že deklaraci proměnné s automatickým odvozením typu
+lze provést uvnitř funkcí, takže všechny další příkazy umístíme (pro
+jednoduchost) přímo do funkce <strong>main</strong>:</p>
+</td>
+	<td class="code"><pre><code><div class="keyword">func</div> <div class="ident">main</div><div class="operator">(</div><div class="operator">)</div> <div class="operator">{</div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Matice</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Pro reprezentaci matic se používá několik struktur. Základem je je <em>dense
+matrix</em> používaná pro matice běžné velikosti, které obsahují libovolné prvky
+(a kde typicky nepřevažují prvky nulové):</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">zero</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Matici lze přímo vytisknout, ovšem výsledek nebývá příliš čitelný,
+protože se vytiskne interní reprezentace matice v operační paměti</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">zero</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Podporováno je i naplnění matice daty - postačuje namísto třetího
+parametru, v němž jsme v předchozí deklaraci použili <code>nil</code>, předat
+řez s hodnotami prvků matice</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">mat2</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">,</div> <div class="literal">11</div><div class="operator">,</div> <div class="literal">12</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat2</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><blockquote>
+<p>Poznámka: zde můžeme vidět, že práce s maticemi není tak
+elegantní, jako je tomu například v knihovně <strong>NumPy</strong>.</p>
+</blockquote>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Zobrazení vybraného obsahu rozsáhlých matic</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Nyní se pokusme vytvořit relativně velkou matici o rozměrech 100x100 prvků:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">big</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">100</div><div class="operator">,</div> <div class="literal">100</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Tuto matici můžeme naplnit daty, a to pomocí metody <code>Set</code> popsané
+níže (vyplníme jen prvky na hlavní úhlopříčce):</p>
+</td>
+	<td class="code"><pre><code>	<div class="keyword">for</div> <div class="ident">i</div> <div class="operator">:=</div> <div class="literal">0</div><div class="operator">;</div> <div class="ident">i</div> <div class="operator">&lt;</div> <div class="literal">100</div><div class="operator">;</div> <div class="ident">i</div><div class="operator">&#43;&#43;</div> <div class="operator">{</div>
+		<div class="ident">big</div><div class="operator">.</div><div class="ident">Set</div><div class="operator">(</div><div class="ident">i</div><div class="operator">,</div> <div class="ident">i</div><div class="operator">,</div> <div class="literal">1</div><div class="operator">)</div><div class="operator"></div>
+	<div class="operator">}</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Přímý tisk hodnoty takové matice ovšem není v žádném případě
+přehledný:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">big</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>{{100 100 [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+...
+...
+...
+0 0 0 0 0 1] 100} 100 100}
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výhodnější je použití funkce <code>mat.Formatted</code>, které se ve druhém
+parametru předá oddělovač hodnot na řádku a ve třetím parametru pak
+informace o tom, kolik mezních sloupců a řádků se má vytisknout.
+Pokud nám postačuje tisk prvních a posledních tří řádků a sloupců,
+lze použít</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Printf</div><div class="operator">(</div><div class="literal">&#34;excerpt big identity matrix: %v\n\n&#34;</div><div class="operator">,</div>
+		<div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">big</div><div class="operator">,</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Prefix</div><div class="operator">(</div><div class="literal">&#34; &#34;</div><div class="operator">)</div><div class="operator">,</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Excerpt</div><div class="operator">(</div><div class="literal">3</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>S mnohem čitelnějšími výsledky:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>excerpt big identity matrix: Dims(100, 100)
+⎡1  0  0  ...  ...  0  0  0⎤
+⎢0  1  0            0  0  0⎥
+⎢0  0  1            0  0  0⎥
+ .
+ .
+ .
+⎢0  0  0            1  0  0⎥
+⎢0  0  0            0  1  0⎥
+⎣0  0  0  ...  ...  0  0  1⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Podobný příkaz, ovšem pro mezních pět řádků a sloupců:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">big</div><div class="operator">,</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Prefix</div><div class="operator">(</div><div class="literal">&#34; &#34;</div><div class="operator">)</div><div class="operator">,</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Excerpt</div><div class="operator">(</div><div class="literal">5</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>S výsledky:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>Dims(100, 100)
+⎡1  0  0  0  0  ...  ...  0  0  0  0  0⎤
+⎢0  1  0  0  0            0  0  0  0  0⎥
+⎢0  0  1  0  0            0  0  0  0  0⎥
+⎢0  0  0  1  0            0  0  0  0  0⎥
+⎢0  0  0  0  1            0  0  0  0  0⎥
+ .
+ .
+ .
+⎢0  0  0  0  0            1  0  0  0  0⎥
+⎢0  0  0  0  0            0  1  0  0  0⎥
+⎢0  0  0  0  0            0  0  1  0  0⎥
+⎢0  0  0  0  0            0  0  0  1  0⎥
+⎣0  0  0  0  0  ...  ...  0  0  0  0  1⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Transpozice a součet matic</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Mezi další podporované základní maticové operace patří transpozice a
+součet matic.</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Nejdříve nadeklarujeme novou proměnnou určenou pro uložení výsledku
+(nealokuje se žádná další paměť)</p>
+</td>
+	<td class="code"><pre><code>	<div class="keyword">var</div> <div class="ident">c</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Dense</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Dále vytvoříme dvě matice se třemi řádky a čtyřmi prvky na řádku</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">m1</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">m2</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">,</div> <div class="literal">11</div><div class="operator">,</div> <div class="literal">12</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Obě matice vytiskneme v čitelném formátu</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">m1</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">m2</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Obsah matic <code>m1</code> a <code>m2</code> zobrazený na standardním výstupu by měl být
+následující:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡0  0  0  0⎤
+⎢0  0  0  0⎥
+⎣0  0  0  0⎦
+
+⎡ 1   2   3   4⎤
+⎢ 5   6   7   8⎥
+⎣ 9  10  11  12⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Transponovaná matice</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výpočet transponované matice s jejím následným vytištěním se provede
+zavoláním metody nazvané jednoduše <code>T</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">m3</div> <div class="operator">:=</div> <div class="ident">m2</div><div class="operator">.</div><div class="ident">T</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">m3</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výsledek - transponovaná matice:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡ 1   5   9⎤
+⎢ 2   6  10⎥
+⎢ 3   7  11⎥
+⎣ 4   8  12⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Součet matic</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Součet matic o stejné velikosti je řešen metodou <code>Add</code>. Tato metoda
+sečte dvě matice předané v parametrech a upraví příjemce (reciver)</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">c</div><div class="operator">.</div><div class="ident">Add</div><div class="operator">(</div><div class="ident">m3</div><div class="operator">,</div> <div class="ident">m3</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="operator">&amp;</div><div class="ident">c</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výsledek:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡ 2  10  18⎤
+⎢ 4  12  20⎥
+⎢ 6  14  22⎥
+⎣ 8  16  24⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><blockquote>
+<p>Poznámka: v této knihovně vždy platí - funkce ani metody nemění
+obsah svých parametrů (matic). Změnit lze obsah jediné hodnoty -
+příjemce (<em>receiveru</em>) u metod.</p>
+</blockquote>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Maticový součin a podobné operace</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Podporována je i operace maticového součinu, ale pochopitelně pouze
+za předpokladu, že počet sloupců první matice odpovídá počtu řádků
+matice druhé. Pokud matice <code>m2</code> a <code>m3</code> předáme ve správném pořadí,
+bude možné matice vynásobit a uložit výsledek do příjemce</p>
+</td>
+	<td class="code"><pre><code>
+	<div class="keyword">var</div> <div class="ident">d</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Dense</div><div class="operator"></div>
+	<div class="ident">d</div><div class="operator">.</div><div class="ident">Mul</div><div class="operator">(</div><div class="ident">m2</div><div class="operator">,</div> <div class="ident">m3</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="operator">&amp;</div><div class="ident">d</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výsledek:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code> ⎡ 30   70  110⎤
+ ⎢ 70  174  278⎥
+ ⎣110  278  446⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Násobení prvek po prvku</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Provést lze i násobení dvou matic prvek po prvku (což ovšem neodpovídá maticovému násobení):</p>
+</td>
+	<td class="code"><pre><code>
+	<div class="keyword">var</div> <div class="ident">e</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Dense</div><div class="operator"></div>
+	<div class="ident">e</div><div class="operator">.</div><div class="ident">MulElem</div><div class="operator">(</div><div class="ident">m3</div><div class="operator">,</div> <div class="ident">m3</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="operator">&amp;</div><div class="ident">e</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výsledek:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code> ⎡  1   25   81⎤
+ ⎢  4   36  100⎥
+ ⎢  9   49  121⎥
+ ⎣ 16   64  144⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Jednorozměrné vektory</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>V předchozím textu jsme se zabývali převážně popisem práce s běžnými
+čtvercovými a obdélníkovými maticemi, i když možnosti tohoto balíčku
+jsou ve skutečnosti větší. Pracovat lze i s vektory, které jsou
+(minimálně z pohledu balíčku <strong>mat</strong>) sloupcové. Výchozím typem
+vektorů je datová struktura <em>vecdense</em> představující vektor s
+měnitelnými (<em>mutable</em>) prvky. Interně se jedná o pole prvků, a
+proto je zde použito slovo &quot;dense&quot;.</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Nový sloupcový vektor se vytvoří konstruktorem nazvaným <strong>NewVecDense</strong>, a to následujícím způsobem:</p>
+</td>
+	<td class="code"><pre><code>
+	<div class="ident">v</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Vektor lze pochopitelně vytisknout</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Jak jsme si již řekli v předchozím odstavci, jedná se o sloupcový vektor:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡0⎤
+⎢0⎥
+⎢0⎥
+⎢0⎥
+⎢0⎥
+⎢0⎥
+⎢0⎥
+⎢0⎥
+⎢0⎥
+⎣0⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>V případě, že budeme chtít vektor inicializovat prvky se známou
+hodnotou, použijeme sice stejný konstruktor, ale namísto druhé
+hodnoty <strong>nil</strong> lze předat řez s hodnotami typu <strong>float64</strong>. Volání
+konstruktoru tedy bude vypadat následovně:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v2</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v2</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡ 1⎤
+⎢ 2⎥
+⎢ 3⎥
+⎢ 4⎥
+⎢ 5⎥
+⎢ 6⎥
+⎢ 7⎥
+⎢ 8⎥
+⎢ 9⎥
+⎣10⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>U vektorů lze zjistit jejich velikost (délka zde vlastně odpovídá výšce) a taktéž kapacitu</p>
+</td>
+	<td class="code"><pre><code>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">v</div><div class="operator">.</div><div class="ident">Len</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">v</div><div class="operator">.</div><div class="ident">Cap</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Metoda <strong>Dims</strong> vrací dimenzi vektoru - <em>n</em> řádků a jeden sloupec:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">v</div><div class="operator">.</div><div class="ident">Dims</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Pochopitelně je možné vytvořit i řádkový vektor o to maticovou operací transpozice zapisovanou metodou se jménem <code>T</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">vt</div> <div class="operator">:=</div> <div class="ident">v</div><div class="operator">.</div><div class="ident">T</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">vt</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>S tímto výsledkem</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>[ 1   2   3   4   5   6   7   8   9  10]
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><blockquote>
+<p>Poznámka: výsledkem je v tomto případě matice s jedním řádkem</p>
+</blockquote>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Získání řezu (slice) z vektoru</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Často je zapotřebí z vektoru získat pouze určitou část. V případě
+polí a řezů (jakožto základních datových typů programovacího jazyka
+Go) je pro tento účel použit operátor <em>řezu</em> (<em>slice</em>), ovšem u
+vektorů typu <em>vecdense</em> je namísto toho nutné použít metodu nazvanou
+<code>SliceVec</code>. Použití této metody je snadné, i když nutno podotknout,
+že ne tak čitelné, jako použití skutečného operátoru pro provedení
+řezu.</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Nejprve vytvoříme nový vektor s deseti prvky</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v10</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Následně vytvoříme řez tvořený prvky s indexy 4 a 5 (tedy <em>kromě</em>
+prvku číslo 6)</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">vslice</div> <div class="operator">:=</div> <div class="ident">v10</div><div class="operator">.</div><div class="ident">SliceVec</div><div class="operator">(</div><div class="literal">4</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Který běžným způsobem vytiskneme</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">vslice</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výsledkem by měl být vektor se dvěma prvky vypadající následovně</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡5⎤
+⎣6⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><blockquote>
+<p>Poznámka: povšimněte si, že první prvek řezu je určen &quot;včetně&quot;,
+zatímco druhý prvek &quot;kromě&quot; (uzavřený vs. otevřený interval).</p>
+</blockquote>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Podobně lze vytvořit řez obsahující všechny původní prvky</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">vcopy</div> <div class="operator">:=</div> <div class="ident">v</div><div class="operator">.</div><div class="ident">SliceVec</div><div class="operator">(</div><div class="literal">0</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">vcopy</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výsledkem by měl být vektor se stejnými prvky jako vektor původní</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1⎤
+⎢2⎥
+⎢3⎥
+⎢4⎥
+⎢5⎥
+⎢6⎥
+⎢7⎥
+⎢8⎥
+⎣9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Indexy prvků musí být kladná čísla - jinými slovy to znamená, že
+není povoleno počítat indexy od konce vektoru tak, jak to známe z
+některých jiných knihoven. Pokus o indexaci záporným číslem povede
+k pádu programu, proto musíme (pro účely tohoto učebního materiálu)
+tento pád zachytit a zpracovat.</p>
+</td>
+	<td class="code"><pre><code>	<div class="keyword">defer</div> <div class="keyword">func</div><div class="operator">(</div><div class="operator">)</div> <div class="operator">{</div>
+		<div class="ident">err</div> <div class="operator">:=</div> <div class="ident">recover</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+		<div class="keyword">if</div> <div class="ident">err</div> <div class="operator">!=</div> <div class="ident">nil</div> <div class="operator">{</div>
+			<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">err</div><div class="operator">)</div><div class="operator"></div>
+		<div class="operator">}</div><div class="operator"></div>
+	<div class="operator">}</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>mat.Formatted(v.SliceVec(0, -1))</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Řez vektoru je skutečným řezem ve smyslu, že se jedná o &quot;pohled&quot; na
+původní vektor. V dalším příkladu vytvoříme řez nazvaný <code>w</code>, jehož
+obsah je nepřímo změněn modifikací obsahu původního vektoru <code>v</code> a
+podíváme se na výsledek.</p>
+</td>
+	<td class="code"><pre><code>
+	<div class="ident">v</div> <div class="operator">=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">w</div> <div class="operator">:=</div> <div class="ident">v</div><div class="operator">.</div><div class="ident">SliceVec</div><div class="operator">(</div><div class="literal">0</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">v</div><div class="operator">.</div><div class="ident">SetVec</div><div class="operator">(</div><div class="literal">5</div><div class="operator">,</div> <div class="literal">100</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Výsledek získaný již známou funkcí <code>Formatted</code> by měl vypadat následovně</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">w</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡  1⎤
+⎢  2⎥
+⎢  3⎥
+⎢  4⎥
+⎢  5⎥
+⎢100⎥
+⎢  7⎥
+⎢  8⎥
+⎣  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Čtení a modifikace prvků vektoru</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Způsob nastavení nové hodnoty prvku vektoru jsme již viděli v
+předchozí podkapitole. Pro tento účel se používá metoda nazvaná
+<code>SetVec</code>; opět tedy platí, že nelze použít přetížený operátor (tak,
+jako tomu je v jiných programovacích jazycích a jejich knihovnách).
+Nejprve tedy vytvoříme nový vektor s explicitně nastavenými prvky a
+posléze tyto prvky změníme v programové smyčce</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v3</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="keyword">for</div> <div class="ident">i</div> <div class="operator">:=</div> <div class="literal">0</div><div class="operator">;</div> <div class="ident">i</div> <div class="operator">&lt;</div> <div class="ident">v3</div><div class="operator">.</div><div class="ident">Len</div><div class="operator">(</div><div class="operator">)</div><div class="operator">;</div> <div class="ident">i</div><div class="operator">&#43;&#43;</div> <div class="operator">{</div>
+		<div class="ident">v3</div><div class="operator">.</div><div class="ident">SetVec</div><div class="operator">(</div><div class="ident">i</div><div class="operator">,</div> <div class="literal">1.0</div><div class="operator">/</div><div class="ident">float64</div><div class="operator">(</div><div class="ident">i</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+	<div class="operator">}</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Změněný vektor bude mít opět deset prvků</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v3</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡               +Inf⎤
+⎢                  1⎥
+⎢                0.5⎥
+⎢ 0.3333333333333333⎥
+⎢               0.25⎥
+⎢                0.2⎥
+⎢0.16666666666666666⎥
+⎢0.14285714285714285⎥
+⎢              0.125⎥
+⎣ 0.1111111111111111⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Existují dvě metody určené pro přečtení hodnoty prvku z vektoru. První
+metoda se jmenuje <code>At</code> a používá se i pro čtení prvků z dvourozměrných matic
+(u sloupcových vektorů je druhý index vždy nulový)</p>
+</td>
+	<td class="code"><pre><code>	<div class="keyword">for</div> <div class="ident">i</div> <div class="operator">:=</div> <div class="literal">0</div><div class="operator">;</div> <div class="ident">i</div> <div class="operator">&lt;</div> <div class="ident">v3</div><div class="operator">.</div><div class="ident">Len</div><div class="operator">(</div><div class="operator">)</div><div class="operator">;</div> <div class="ident">i</div><div class="operator">&#43;&#43;</div> <div class="operator">{</div>
+		<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Printf</div><div class="operator">(</div><div class="literal">&#34;%10.6f\n&#34;</div><div class="operator">,</div> <div class="ident">v3</div><div class="operator">.</div><div class="ident">At</div><div class="operator">(</div><div class="ident">i</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+	<div class="operator">}</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>    +Inf
+1.000000
+0.500000
+0.333333
+0.250000
+0.200000
+0.166667
+0.142857
+0.125000
+0.111111
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Druhá metoda se jmenuje <code>AtVec</code> a předává se jí jen jediný index.
+Použitelná je tedy jen v případě jednorozměrných vektorů.</p>
+</td>
+	<td class="code"><pre><code>	<div class="keyword">for</div> <div class="ident">i</div> <div class="operator">:=</div> <div class="literal">0</div><div class="operator">;</div> <div class="ident">i</div> <div class="operator">&lt;</div> <div class="ident">w</div><div class="operator">.</div><div class="ident">Len</div><div class="operator">(</div><div class="operator">)</div><div class="operator">;</div> <div class="ident">i</div><div class="operator">&#43;&#43;</div> <div class="operator">{</div>
+		<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Printf</div><div class="operator">(</div><div class="literal">&#34;%10.6f\n&#34;</div><div class="operator">,</div> <div class="ident">w</div><div class="operator">.</div><div class="ident">AtVec</div><div class="operator">(</div><div class="ident">i</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+	<div class="operator">}</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡  1⎤
+⎢  2⎥
+⎢  3⎥
+⎢  4⎥
+⎢  5⎥
+⎢100⎥
+⎢  7⎥
+⎢  8⎥
+⎣  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Další podporované operace nad vektory</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>V této podkapitole si popíšeme některé další operace, které lze
+provádět s vektory. Nejdříve vytvoříme dvojici vektorů, které budou
+použity v dalších příkazech. Obsah těchto vektorů si necháme vypsat
+na standardní výstup.</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v1</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">5</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">v2</div> <div class="operator">=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">5</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v1</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v2</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡0⎤
+⎢0⎥
+⎢0⎥
+⎢0⎥
+⎣0⎦
+
+⎡1⎤
+⎢0⎥
+⎢2⎥
+⎢0⎥
+⎣3⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Třetí vektor bude použit jako cíl pro některé vybrané operace</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v</div> <div class="operator">=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">5</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Součet vektorů</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Operace součtu dvou vektorů realizovaná metodou <code>AddVec</code>. V tomto případě se modifikuje její příjemce (<em>receiver</em>)</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v</div><div class="operator">.</div><div class="ident">AddVec</div><div class="operator">(</div><div class="ident">v1</div><div class="operator">,</div> <div class="ident">v2</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1⎤
+⎢0⎥
+⎢2⎥
+⎢0⎥
+⎣3⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Součet vektoru <code>v2</code> se sebou samým s uložením výsledku do vektoru <code>v</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v</div><div class="operator">.</div><div class="ident">AddVec</div><div class="operator">(</div><div class="ident">v2</div><div class="operator">,</div> <div class="ident">v2</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡2⎤
+⎢0⎥
+⎢4⎥
+⎢0⎥
+⎣6⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Rozdíl vektorů</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Operace rozdílu vektorů, opět s modifikací příjemce</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v</div><div class="operator">.</div><div class="ident">SubVec</div><div class="operator">(</div><div class="ident">v1</div><div class="operator">,</div> <div class="ident">v2</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡-1⎤
+⎢ 0⎥
+⎢-2⎥
+⎢ 0⎥
+⎣-3⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Změna měřítka (natažení...)</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Změna měřítka, tj. vynásobení všech prvků vektoru nějakou
+konstantou, se realizuje metodou nazvanou <code>ScaleVec</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v</div><div class="operator">.</div><div class="ident">ScaleVec</div><div class="operator">(</div><div class="literal">10.0</div><div class="operator">,</div> <div class="ident">v2</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡10⎤
+⎢ 0⎥
+⎢20⎥
+⎢ 0⎥
+⎣30⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Vynásobení korespondujících prvků vektorů</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Vynásobení dvou vektorů stylem prvek po prvku (nejedná se o
+vektorový součin)</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">v</div><div class="operator">.</div><div class="ident">MulElemVec</div><div class="operator">(</div><div class="ident">v2</div><div class="operator">,</div> <div class="ident">v2</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1⎤
+⎢0⎥
+⎢4⎥
+⎢0⎥
+⎣9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Součin matice a vektoru</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Podporována je i operace vynásobení matice a vektoru, samozřejmě za
+předpokladu, že počet sloupců matice bude odpovídat počtu řádků
+sloupcového vektoru. Vytvoříme tedy matici o rozměrech 3x3 prvky,
+sloupcový vektor se třemi prvky a provedeme vynásobení matice a
+vektoru. Vektor <code>v</code> je opět určen pro uložení výsledků.</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">m</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">1</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">1</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">v4</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">v5</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewVecDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">v5</div><div class="operator">.</div><div class="ident">MulVec</div><div class="operator">(</div><div class="ident">m</div><div class="operator">,</div> <div class="ident">v4</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v5</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡2⎤
+⎢3⎥
+⎣4⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Vynásobení vektoru maticí reprezentující otočení okolo z-ové osy o 90 stupňů
+by mohlo být realizováno následujícím kódem</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">m5</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">0</div><div class="operator">,</div> <div class="operator">-</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">1</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="literal">1</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">v5</div><div class="operator">.</div><div class="ident">MulVec</div><div class="operator">(</div><div class="ident">m5</div><div class="operator">,</div> <div class="ident">v5</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">v5</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡-3⎤
+⎢ 2⎥
+⎣ 4⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Skalární součin</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Skalární součin dvou vektorů o stejné velikosti se provádí funkcí
+<code>Dot</code>. Výsledkem je hodnota typu <code>float64</code>, tedy skutečně skalár.</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">s1</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Dot</div><div class="operator">(</div><div class="ident">v1</div><div class="operator">,</div> <div class="ident">v2</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">s2</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Dot</div><div class="operator">(</div><div class="ident">v2</div><div class="operator">,</div> <div class="ident">v2</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">s1</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">s2</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>0
+14
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Získání prvku s největší a nejmenší hodnotou:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Max</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Min</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>9
+0
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Součet všech prvků vektoru:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Sum</div><div class="operator">(</div><div class="ident">v</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>14
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Práce s obecnými dvourozměrnými maticemi</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Obecnou dvourozměrnou matici vytváříme konstruktorem <code>NewDense</code>, které se předá počet řádků následovaný počtem sloupců</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">dense1</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">6</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">dense1</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡0  0  0  0  0⎤
+⎢0  0  0  0  0⎥
+⎢0  0  0  0  0⎥
+⎢0  0  0  0  0⎥
+⎢0  0  0  0  0⎥
+⎣0  0  0  0  0⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Konstrukce matice s inicializací jejich prvků se provede předáním řezu s hodnotami prvků</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">dense2</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">4</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">,</div> <div class="literal">11</div><div class="operator">,</div> <div class="literal">12</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">dense2</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡ 1   2   3⎤
+⎢ 4   5   6⎥
+⎢ 7   8   9⎥
+⎣10  11  12⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Třetí matice, tentokrát se třemi řádky a čtyřmi sloupci</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">dense3</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">,</div> <div class="literal">11</div><div class="operator">,</div> <div class="literal">12</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">dense3</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡ 1   2   3   4⎤
+⎢ 5   6   7   8⎥
+⎣ 9  10  11  12⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Čtvercová matice 3x3 prvky</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">dense4</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  2  3⎤
+⎢4  5  6⎥
+⎣7  8  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Přečtení sloupce z matice</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Přečtení i-tého sloupce matice zajišťuje metoda <code>Col</code>. Výsledkem je
+v tomto případě běžný řez programovacího jazyka Go</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Col</div><div class="operator">(</div><div class="ident">nil</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>[1 4 7]
+</code></pre>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Col</div><div class="operator">(</div><div class="ident">nil</div><div class="operator">,</div> <div class="literal">1</div><div class="operator">,</div> <div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>[2 5 8]
+</code></pre>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Col</div><div class="operator">(</div><div class="ident">nil</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>[3 6 9]
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Přečtení řádku z matice</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Přečtení j-tého řádku matice je provedeno metodou <code>Row</code>. Výsledkem
+je v tomto případě opět běžný řez programovacího jazyka Go (toto
+chování je v&nbsp;jiných knihovnách odlišné!)</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Row</div><div class="operator">(</div><div class="ident">nil</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>[1 2 3]
+</code></pre>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Row</div><div class="operator">(</div><div class="ident">nil</div><div class="operator">,</div> <div class="literal">1</div><div class="operator">,</div> <div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>[4 5 6]
+</code></pre>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Row</div><div class="operator">(</div><div class="ident">nil</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>[7 8 9]
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Výpočet determinantu</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>O výpočet determinantu matice 3x3 prvky se stará metoda nazvaná
+<code>Det</code>. V tomto případě je výsledkem skalární hodnota typu <code>float64</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Det</div><div class="operator">(</div><div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>6.66133814775094e-16    // float64
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Prvek s minimální a maximální hodnotou, součet hodnot prvků</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Opět můžeme použít funkce pro získání prvku s nejmenší hodnotou,
+největší hodnotou a pro součet (sumu) všech prvků v matici.
+Příslušné metody mají stejný název jako v případě vektorů, tedy
+<code>Min</code>, <code>Max</code> a <code>Sum</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Min</div><div class="operator">(</div><div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>1       // float64
+</code></pre>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Max</div><div class="operator">(</div><div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>9       // float64
+</code></pre>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Sum</div><div class="operator">(</div><div class="ident">dense4</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>45      // float64
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h3>Získání diagonální matice</h3>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Poslední zajímavou metodou určenou pro zpracování matic je metoda,
+která vrací diagonální matici (všechny prvky kromě prvků na hlavní
+diagonále jsou nulové)</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">dense4</div><div class="operator">.</div><div class="ident">DiagView</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  0  0⎤
+⎢0  5  0⎥
+⎣0  0  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Symetrické matice</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>V knihovně <strong>mat</strong> existuje i konstruktor pro symetrické matice. Chování tohoto konstruktoru je ovšem poněkud zvláštní - předat je mu totiž nutné všechny prvky odpovídající velikosti matice. Například pro matici 3x3 prvky (symetrická matice je vždy čtvercová) je nutné konstruktoru předat devět hodnot prvků, i když se z těchto hodnot použije jen šest prvků (horní trojúhelníková matice). Toto chování odlišuje <strong>mat</strong> od podobně koncipovaných knihoven známých z jiných programovacích jazyků.</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">s</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewSymDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">s</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  2  3⎤
+⎢2  5  6⎥
+⎣3  6  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Symetrické matice zachovávají většinu základních vlastností běžných matic, tj. můžeme například získat informace o jejich kapacitě, velikosti (v jednotlivých dimenzích) atd.:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">s</div><div class="operator">.</div><div class="ident">Caps</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">s</div><div class="operator">.</div><div class="ident">Dims</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Vytvořit je možné i transformovanou matici, což je ovšem jen kopie matice původní:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">s</div><div class="operator">.</div><div class="ident">T</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  2  3⎤
+⎢2  5  6⎥
+⎣3  6  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Prvky symetrické matice se nastavují metodou <code>SetSym</code> (jiná metoda
+ostatně ani není k dispozici). Tato metoda pochopitelně zachovává
+&quot;symetričnost&quot; matice, tj. změní se buď jeden prvek na hlavní
+diagonále nebo dvojice prvků:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">s</div><div class="operator">.</div><div class="ident">SetSym</div><div class="operator">(</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">0</div><div class="operator">,</div> <div class="operator">-</div><div class="literal">100</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">s</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡   1  -100     3⎤
+⎢-100     5     6⎥
+⎣   3     6     9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Diagonální matice</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Další variantou matic jsou diagonální matice. Ty lze vytvořit
+konstruktorem <code>NewDiagDense</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">d1</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDiagDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="ident">nil</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">d1</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡0  0  0  0  0  0  0  0  0  0⎤
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎢0  0  0  0  0  0  0  0  0  0⎥
+⎣0  0  0  0  0  0  0  0  0  0⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Konstruktoru je možné předat hodnoty všech prvků na hlavní
+diagonále:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">d2</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDiagDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">d2</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡ 1   0   0   0   0   0   0   0   0   0⎤
+⎢ 0   2   0   0   0   0   0   0   0   0⎥
+⎢ 0   0   3   0   0   0   0   0   0   0⎥
+⎢ 0   0   0   4   0   0   0   0   0   0⎥
+⎢ 0   0   0   0   5   0   0   0   0   0⎥
+⎢ 0   0   0   0   0   6   0   0   0   0⎥
+⎢ 0   0   0   0   0   0   7   0   0   0⎥
+⎢ 0   0   0   0   0   0   0   8   0   0⎥
+⎢ 0   0   0   0   0   0   0   0   9   0⎥
+⎣ 0   0   0   0   0   0   0   0   0  10⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>A opět jsou k dispozici metody pro získání základních informací o
+existující matici</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">d2</div><div class="operator">.</div><div class="ident">Diag</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>10      // int
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+	<div class="ident">d2</div><div class="operator">.</div><div class="ident">Dims</div><div class="operator">(</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>10      // int
+10      // int
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Pro nastavení hodnoty prvku diagonální matice se používá metoda
+nazvaná <code>SetDiag</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">d3</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewDiagDense</div><div class="operator">(</div><div class="literal">10</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">,</div> <div class="literal">10</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">d3</div><div class="operator">.</div><div class="ident">SetDiag</div><div class="operator">(</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">100</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">d3</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡  1    0    0    0    0    0    0    0    0    0⎤
+⎢  0  100    0    0    0    0    0    0    0    0⎥
+⎢  0    0    3    0    0    0    0    0    0    0⎥
+⎢  0    0    0    4    0    0    0    0    0    0⎥
+⎢  0    0    0    0    5    0    0    0    0    0⎥
+⎢  0    0    0    0    0    6    0    0    0    0⎥
+⎢  0    0    0    0    0    0    7    0    0    0⎥
+⎢  0    0    0    0    0    0    0    8    0    0⎥
+⎢  0    0    0    0    0    0    0    0    9    0⎥
+⎣  0    0    0    0    0    0    0    0    0   10⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h2>Trojúhelníkové matice</h2>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>V knihovně <strong>mat</strong> jsou vývojářům k dispozici i funkce a metody
+určené pro práci s trojúhelníkovými maticemi. Opět si nejprve
+řekněme, jakým způsobem se tyto matice vytváří. Použít můžeme
+konstruktor <code>NewTriDense</code>, kterému se předává jak velikost
+trojúhelníkové matice (je pochopitelně čtvercová), tak i to, zda se
+jedná o horní či dolní trojúhelníkovou matici. A opět platí, že je
+nutné zapsat všechny prvky trojúhelníkové matice, i když se ve
+skutečnosti využijí pouze hodnoty prvků na hlavní diagonále a horním
+resp. dolním trojúhelníku.</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Horní trojúhelníková matice se vytváří s využitím konstanty
+<code>mat.Upper</code></p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">t1</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewTriDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Upper</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">t1</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  2  3⎤
+⎢0  5  6⎥
+⎣0  0  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Dolní trojúhelníková matice inicializovaná shodnými hodnotami se
+konstruuje následovně</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">t2</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewTriDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Lower</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">t2</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  0  0⎤
+⎢4  5  0⎥
+⎣7  8  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Získat můžeme pohled obsahující pouze prvky na hlavní diagonále:</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">t1</div><div class="operator">.</div><div class="ident">DiagView</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  0  0⎤
+⎢0  5  0⎥
+⎣0  0  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">t2</div><div class="operator">.</div><div class="ident">DiagView</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  0  0⎤
+⎢0  5  0⎥
+⎣0  0  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Trojúhelníkové matice lze transponovat, čímž se z horní matice stane
+dolní a naopak</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">t1</div><div class="operator">.</div><div class="ident">T</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  0  0⎤
+⎢2  5  0⎥
+⎣3  6  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">t2</div><div class="operator">.</div><div class="ident">T</div><div class="operator">(</div><div class="operator">)</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡1  4  7⎤
+⎢0  5  8⎥
+⎣0  0  9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Pro nastavení hodnot prvků trojúhelníkové matice slouží metoda
+<code>NewTriDense</code>, která zajistí, aby se <strong>neměnily</strong> prvky v té části
+trojúhelníkové matice, které musí být nulové</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">t3</div> <div class="operator">:=</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">NewTriDense</div><div class="operator">(</div><div class="literal">3</div><div class="operator">,</div> <div class="ident">mat</div><div class="operator">.</div><div class="ident">Upper</div><div class="operator">,</div> <div class="operator">[</div><div class="operator">]</div><div class="ident">float64</div><div class="operator">{</div><div class="literal">1</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">3</div><div class="operator">,</div> <div class="literal">4</div><div class="operator">,</div> <div class="literal">5</div><div class="operator">,</div> <div class="literal">6</div><div class="operator">,</div> <div class="literal">7</div><div class="operator">,</div> <div class="literal">8</div><div class="operator">,</div> <div class="literal">9</div><div class="operator">}</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>toto provést nelze nelze: t3.SetTri(2, 0, 100)
+vedlo by k chybě při běhu:</p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>mat: triangular set out of bounds
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Prvek ve třetím sloupci a na prvním řádku naopak změnit bez problémů
+lze, protože se jedná o horní trojúhelníkovou matici</p>
+</td>
+	<td class="code"><pre><code>	<div class="ident">t3</div><div class="operator">.</div><div class="ident">SetTri</div><div class="operator">(</div><div class="literal">0</div><div class="operator">,</div> <div class="literal">2</div><div class="operator">,</div> <div class="literal">100</div><div class="operator">)</div><div class="operator"></div>
+	<div class="ident">fmt</div><div class="operator">.</div><div class="ident">Println</div><div class="operator">(</div><div class="ident">mat</div><div class="operator">.</div><div class="ident">Formatted</div><div class="operator">(</div><div class="ident">t3</div><div class="operator">)</div><div class="operator">)</div><div class="operator"></div>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><pre><code>⎡  1    2  100⎤
+⎢  0    5    6⎥
+⎣  0    0    9⎦
+</code></pre>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Další informace o datových typech, metodách a funkcích poskytovaných
+balíčkem <strong>mat</strong> naleznete na stránce
+<a href="https://godoc.org/gonum.org/v1/gonum/mat">https://godoc.org/gonum.org/v1/gonum/mat</a></p>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><h1>finito █</h1>
+</td>
+	<td class="code"><pre><code><div class="operator">}</div><div class="operator"></div>
+
+</code></pre></td>
+      </tr>
+      
+      <tr class="section">
+	<td class="doc"><p>Odkazy pro další studium:</p>
+
+<ol>
+<li><a href="https://www.gonum.org/post/introtogonum/">The Gonum Numerical Computing Package</a></li>
+<li><a href="https://www.root.cz/clanky/gorilla-repl-interaktivni-prostredi-pro-programovaci-jazyk-clojure/">Gorilla REPL: interaktivní prostředí pro programovací jazyk Clojure</a></li>
+<li><a href="https://github.com/cosmos72/gomacro">Gomacro na GitHubu</a></li>
+<li><a href="https://github.com/gopherdata/gophernotes">gophernotes - Use Go in Jupyter notebooks and nteract</a></li>
+<li><a href="https://github.com/gonum">Knihovna gonum</a></li>
+<li><a href="https://porter.io/github.com/go-gota/gota">go-gota/gota -  DataFrames and data wrangling in Go (Golang)</a></li>
+<li><a href="https://github.com/gonum/plot">A repository for plotting and visualizing data </a></li>
+<li><a href="https://numpy.org/">NumPy</a></li>
+<li><a href="https://numpy.org/devdocs/user/quickstart.html">NumPy tutorial</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Array_programming">Array Programming</a></li>
+<li><a href="https://www.r-project.org/">The R Project for Statistical Computing</a></li>
+<li><a href="https://en.wikipedia.org/wiki/R_(programming_language)">R (programming language)</a></li>
+<li><a href="https://ipython.org/notebook.html">The Jupyter Notebook</a></li>
+<li><a href="https://ipython.org/ipython-doc/stable/notebook/index.html">The IPython notebook documentation</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Row_and_column_vectors">Row and column vectors</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Triangular_matrix">Triangular matrix</a></li>
+</ol>
+</td>
+	<td class="code"><pre><code>
+</code></pre></td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
