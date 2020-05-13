@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>consumer_benchmarks.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>consumer_benchmarks.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h1>Consumer benchmarks</h1>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h2>Tasks</h2>
+<ul>
+<li>measure the speed of consuming messages from Kafka broker</li>
+<li>measure speed of all steps performed during consume message operation</li>
+<li>compute throughput - number of consumable messages per second (worst, best, average scenarios)</li>
+<li>compute possible speedup achievable by using multiple consumers</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <h2>Preparation steps</h2>
+<ul>
+<li>100000 messages were sent to Kafka broker into selected topic (in advance)</li>
+<li>consumer has been updated to print durations into log files</li>
+<li>storage has been set to be local (configurable PSQL or SQLite)</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <h2>Measurement steps</h2>
+<ul>
+<li>aggregator was started, all messages consumed, then stopped</li>
+<li>log were redirected into text file</li>
+<li>then log were transformed into two CSV files used below</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <h2>Machine used to run benchmarks</h2>
+<pre><code>
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              8
+On-line CPU(s) list: 0-7
+Thread(s) per core:  2
+Core(s) per socket:  4
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               94
+Model name:          Intel(R) Core(TM) i7-6820HQ
+                     CPU @ 2.70GHz
+Stepping:            3
+CPU MHz:             900.222
+CPU max MHz:         3600.0000
+CPU min MHz:         800.0000
+BogoMIPS:            5424.00
+Virtualization:      VT-x
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            256K
+L3 cache:            8192K
+NUMA node0 CPU(s):   0-7
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <h2>Main results</h2>
+<p>Time was measured by the <code>time</code> tool on command line. Number of messages in
+Kafka topic was known in advance. So it is only needed to compute time in
+seconds (trivial) and average number of messages consumed per second:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">number_of_consumed_messages</span><span class="o">=</span><span class="mi">100000</span>
+<span class="n">time_in_minutes</span><span class="o">=</span><span class="mi">26</span>
+<span class="n">time_in_seconds</span><span class="o">=</span><span class="n">time_in_minutes</span><span class="o">*</span><span class="mi">60</span>
+<span class="n">messages_per_second</span><span class="o">=</span><span class="n">number_of_consumed_messages</span><span class="o">/</span><span class="n">time_in_seconds</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Average (rounded) number of messages consumed per second and per minute is:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Per second: &quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">messages_per_second</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Per minute: &quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">messages_per_second</span><span class="o">*</span><span class="mi">60</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <h3>Observations</h3>
+<ul>
+<li>one thread was used by aggregator (expected)</li>
+<li>just 40% CPU utilization by aggregator process</li>
+<li>rest (60%) spent by I/O operations</li>
+<li>-&gt; I/O (DB I/O + Kafka broker I/O basically are limiting factors)</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <h1>Detailed behavior of consumer</h1>
+<p>It is also possible to analyze log files (or rather CSV files generated from
+log files). We will use Pandas, Numpy, and Matplotlib libraries here</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <h2>Initialization part</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>we are going to display graphs and work with data frames</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>let&rsquo;s display all graphs without the need to call .show()</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;matplotlib&#39;</span><span class="p">,</span> <span class="s1">&#39;inline&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <h2>Loading all data files with raw metrics</h2>
+<p>Two CSV files were prepared. <code>consumer_durations.csv</code> contains just whole duration and offset, nothing else:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>this CSV file contains just whole duration per message (ms) + message offset (int64 value)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">durations</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;consumer_durations.csv&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>observe first ten items taken from this file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">durations</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>Second file is named <code>consumer_steps_durations.csv</code>. It contains five values
+measured for each consumed message:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <ol>
+<li>time to read message from Kafka topic</li>
+<li>time to check if the message is correct</li>
+<li>time to check if it is possible to marshall JSON stored in the message</li>
+<li>time to check timestamp</li>
+<li>time to store message body into DB storage</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>this file is a bit more complicated - it contains duration of all 5 steps (in ns)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">duration_steps</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;consumer_steps_durations.csv&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>first ten items taken from this file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">duration_steps</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <h2>Data statistic</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>CSV files have been consumed and transformed into DataFrames, so it is
+possible to gather some statistic and display charts.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>let&rsquo;s compute average, best and worst durations (in ms) etc.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">durations</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>would be nice to display some graphs as well, especially for overall duration</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">durations</span><span class="p">[</span><span class="s2">&quot;Duration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <h2>Detailed results for first 500 messages</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <p>Please note that first x1000 messages are usually processed a bit faster
+compared to overall average! This is because garbage collector does not have
+to be started frequently during warmup and Go programs are not JITted.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <p>statistic (average, worst, best) for 5 steps for process each message</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">duration_steps</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p>again, plot the behaviour over time</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">duration_steps</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <p>we can see that DB store is the most time demanding operation</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <p>let&rsquo;s display relative times for each processing step</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">duration_steps</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      <h2>Possible speedup - Amdahl&rsquo;s law</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      <p>It would be possible to perform first four steps in parallel. So let&rsquo;s
+compute if its worth it and which speedup is possible</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-32'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-32'>#</a>
+      </div>
+      <p>again, look at steps</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">duration_steps</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-33'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-33'>#</a>
+      </div>
+      <p>We can display stats/speedup for average, worst, and best scenarios. Average
+might be appropriate for the first version of this benchmark</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-34'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-34'>#</a>
+      </div>
+      <p>let&rsquo;s retrieve means for all five steps</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">means</span> <span class="o">=</span> <span class="n">duration_steps</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-35'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-35'>#</a>
+      </div>
+      <p>the first four steps can be (in theory) made parallel</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">parallel_part</span> <span class="o">=</span> <span class="n">means</span><span class="p">[</span><span class="s2">&quot;Read&quot;</span><span class="p">]</span><span class="o">+</span><span class="n">means</span><span class="p">[</span><span class="s2">&quot;Whitelisting&quot;</span><span class="p">]</span><span class="o">+</span><span class="n">means</span><span class="p">[</span><span class="s2">&quot;Marshalling&quot;</span><span class="p">]</span><span class="o">+</span><span class="n">means</span><span class="p">[</span><span class="s2">&quot;Time check&quot;</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Parallel:&quot;</span><span class="p">,</span> <span class="n">parallel_part</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-36'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-36'>#</a>
+      </div>
+      <p>last step can be parallelized just in thery - in fact I/O is the bottleneck there</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">sequence_part</span> <span class="o">=</span> <span class="n">means</span><span class="p">[</span><span class="s2">&quot;DB store&quot;</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Sequence:&quot;</span><span class="p">,</span> <span class="n">sequence_part</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      <p>compute parameters for Amdahl&rsquo;s law</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">p</span><span class="o">=</span><span class="n">parallel_part</span><span class="o">/</span><span class="n">sequence_part</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Ratio:&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <p>throughput for one pod/one CPU</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">t1</span> <span class="o">=</span> <span class="mi">1000000</span><span class="o">/</span><span class="p">(</span><span class="n">parallel_part</span><span class="o">+</span><span class="n">sequence_part</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Throughput for 1 pod:&quot;</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="s2">&quot;per second&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <p>now compute and display possible speedup for 2..32 CPUs/pods</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">s</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-40'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-40'>#</a>
+      </div>
+      <p>possible throughputs for 1..32 CPUs/pods</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">t</span><span class="o">=</span><span class="n">t1</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">p</span><span class="o">+</span><span class="n">p</span><span class="o">/</span><span class="n">s</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
+      <p>the best value for 32 CPUs/pods</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-42'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-42'>#</a>
+      </div>
+      <p>display the graph</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">t</span> <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-43'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-43'>#</a>
+      </div>
+      <p>looks like that even with 32 pods/CPUs (that is really large number of pods)
+we can process at most ~143 messages per second</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">per_second</span><span class="o">=</span><span class="mi">143</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-44'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-44'>#</a>
+      </div>
+      <p>let&rsquo;s compute peak values per minute, per hour and per day</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">per_minute</span><span class="o">=</span><span class="n">per_second</span><span class="o">*</span><span class="mi">60</span>
+<span class="n">per_hour</span><span class="o">=</span><span class="n">per_minute</span><span class="o">*</span><span class="mi">60</span>
+<span class="n">per_day</span><span class="o">=</span><span class="n">per_hour</span><span class="o">*</span><span class="mi">24</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Per second&quot;</span><span class="p">,</span> <span class="n">per_second</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Per minute&quot;</span><span class="p">,</span> <span class="n">per_minute</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Per hour  &quot;</span><span class="p">,</span> <span class="n">per_hour</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Per day   &quot;</span><span class="p">,</span> <span class="n">per_day</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-45'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-45'>#</a>
+      </div>
+      <h2>Real expectations</h2>
+<p>i.e. How much messages we have to process per given timeframe (day, hour,
+minute, second)?</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-46'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-46'>#</a>
+      </div>
+      <h3>Loading all data files with raw metrics</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-47'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-47'>#</a>
+      </div>
+      <p>The following data file contains precise timestamps when input data were
+captured. We have to specify, that the first column needs to be parsed like a
+date (it can be done automatically, but sometimes it does not work
+correctly).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">upload_timestamps</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;upload_timestamps_2020_04.csv&quot;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-48'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-48'>#</a>
+      </div>
+      <p>Let&rsquo;s check the content of such data by displaying first ten records read
+from CSV file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">upload_timestamps</span><span class="o">.</span><span class="n">head</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-49'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-49'>#</a>
+      </div>
+      <h3>Total uploads of insights raw data per day</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-50'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-50'>#</a>
+      </div>
+      <p>We can resample input data into one day buckets</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_day</span> <span class="o">=</span> <span class="n">upload_timestamps</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;1D&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">by_day</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-51'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-51'>#</a>
+      </div>
+      <p>display graph with measured total uploads per day</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_day_plot</span> <span class="o">=</span> <span class="n">by_day</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Total uploads per day&quot;</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-52'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-52'>#</a>
+      </div>
+      <h3>Total uploads of insights raw data per hour</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-53'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-53'>#</a>
+      </div>
+      <p>The same operation can be done, but for 1 hour buckets</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_hour</span> <span class="o">=</span> <span class="n">upload_timestamps</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;60min&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">by_hour</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-54'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-54'>#</a>
+      </div>
+      <p>display graph with measured total uploads per hour</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_hour_plot</span> <span class="o">=</span> <span class="n">by_hour</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Total uploads per hour&quot;</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-55'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-55'>#</a>
+      </div>
+      <h3>Total uploads of insights raw data per minute</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-56'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-56'>#</a>
+      </div>
+      <p>We can resample input data into 1 minute buckets</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_minute</span> <span class="o">=</span> <span class="n">upload_timestamps</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;1min&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">by_minute</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-57'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-57'>#</a>
+      </div>
+      <p>display graph with measured total uploads per hour</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_minute_plot</span> <span class="o">=</span> <span class="n">by_minute</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Total uploads per minute&quot;</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-58'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-58'>#</a>
+      </div>
+      <h3>Total uploads of insights raw data per second</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-59'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-59'>#</a>
+      </div>
+      <p>It is possible to resample input data into 1 second buckets</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_second</span> <span class="o">=</span> <span class="n">upload_timestamps</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;1s&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">by_second</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-60'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-60'>#</a>
+      </div>
+      <p>display graph with measured total uploads per hour</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">by_second_plot</span> <span class="o">=</span> <span class="n">by_second</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Total uploads per second&quot;</span><span class="p">,</span><span class="n">legend</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-61'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-61'>#</a>
+      </div>
+      <h2>Conclusion</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-62'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-62'>#</a>
+      </div>
+      <p>Let&rsquo;s compare number of messages measured in production with the peak ratio
+(maximum number of messages that can be processed by using parallel pods)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">per_second_stat</span><span class="o">=</span><span class="n">by_second</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="n">mean_value</span><span class="o">=</span><span class="n">per_second_stat</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">worst_value</span><span class="o">=</span><span class="n">per_second_stat</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">best_value</span><span class="o">=</span><span class="n">per_second_stat</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Average scenario: &quot;</span><span class="p">,</span> <span class="n">per_second</span><span class="p">,</span> <span class="n">mean_value</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Best scenario:    &quot;</span><span class="p">,</span> <span class="n">per_second</span><span class="p">,</span> <span class="n">best_value</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Worst scenario:   &quot;</span><span class="p">,</span> <span class="n">per_second</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">worst_value</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-63'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-63'>#</a>
+      </div>
+      <h1>Aggregator memory consumption</h1>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-64'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-64'>#</a>
+      </div>
+      <p>We also need to look how much memory is allocated by <code>aggregator</code> process.
+This process exposes metrics (as many other applications written in Go) that
+can be simply read with some frequency (ten seconds by default) and stored
+into CSV file named <code>memory_consumption.csv</code>. The following metrics are
+gathered and stored into CSV:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">exported_metrics</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;go_gc_duration_seconds_sum&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;go_gc_duration_seconds_count&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;go_memstats_alloc_bytes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;go_memstats_sys_bytes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;go_memstats_mallocs_total&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;go_memstats_frees_total&quot;</span><span class="p">,</span>
+        <span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-65'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-65'>#</a>
+      </div>
+      <p>Now it is possible to read file that contains memory consumption </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">memory</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;memory_consumption.csv&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-66'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-66'>#</a>
+      </div>
+      <p>Let&rsquo;s look at first 10 records just to see how values are stored</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">memory</span><span class="o">.</span><span class="n">head</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-67'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-67'>#</a>
+      </div>
+      <p>And display graph with results</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">memory</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">grid</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subplots</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-68'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-68'>#</a>
+      </div>
+      <h2>Conclusion</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-69'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-69'>#</a>
+      </div>
+      <p>Memory consumption is pretty low (8MB heap size) and - which is more
+important - it seems to be very stable over time. Also number of GC calls is
+low and does not cause slowdown of the whole process.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-70'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-70'>#</a>
+      </div>
+      <p>finito</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
